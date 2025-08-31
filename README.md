@@ -17,7 +17,7 @@ Instead of just using a webcam, this implementation also supports **YouTube vide
 ## 📹 Demo
 Check out the demo video here:  
 
-[![Demo Video](https://github.com/Anshidtp/Facial_Emotion_Detection/blob/main/sample_demo/facial_landmarks.gif)]
+![Demo Video](https://github.com/Anshidtp/Facial_Emotion_Detection/blob/main/sample_demo/facial_landmarks.gif)
 
 ---
 
