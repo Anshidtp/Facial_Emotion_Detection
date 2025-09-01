@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import yt_dlp
+from fer import FER
 
 # Initialize MediaPipe Face Mesh and Drawing utilities
 mp_face = mp.solutions.face_mesh
@@ -29,6 +30,10 @@ with yt_dlp.YoutubeDL(ydl_opts) as ydl:
 # Start webcam capture
 cam_video = cv2.VideoCapture(stream_url)
 
+# Emotion detection model
+detector = FER(mtcnn=False)
+
+
 # Get text size for the on-screen instructions
 text_size, _ = cv2.getTextSize(info_text, font, font_scale, font_thickness)
 
@@ -52,6 +57,8 @@ with mp_face.FaceMesh(
         rgb_frame.flags.writeable = True
 
         frame_height, frame_width = frame.shape[:2]
+
+        
 
         if result.multi_face_landmarks:
             for face_landmarks in result.multi_face_landmarks:
@@ -83,6 +90,22 @@ with mp_face.FaceMesh(
                         landmark_drawing_spec=None,
                         connection_drawing_spec=mp_drawing_styles.get_default_face_mesh_iris_connections_style()
                     )
+            
+        
+        # Emotion Detection
+        emotions_result = detector.detect_emotions(frame)
+        if emotions_result:
+            (x, y, w, h) = emotions_result[0]["box"]
+            emotions = emotions_result[0]["emotions"]
+
+            # Get top emotion
+            top_emotion = max(emotions, key=emotions.get)
+            score = emotions[top_emotion]
+
+            # Draw bounding box + emotion text
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(frame, f"{top_emotion} ({score:.2f})", (x, y - 10),
+                        font, 0.9, (0, 255, 0), 2)
 
                 
 
